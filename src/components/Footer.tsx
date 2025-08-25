@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 import { 
   Facebook, 
   Youtube, 
@@ -49,12 +50,12 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Khóa Học</h4>
             <ul className="space-y-3 text-white/80">
-              <li><a href="#" className="hover:text-white transition-smooth">Tiếng Anh Giao Tiếp</a></li>
-              <li><a href="#" className="hover:text-white transition-smooth">Business English</a></li>
-              <li><a href="#" className="hover:text-white transition-smooth">IELTS Intensive</a></li>
-              <li><a href="#" className="hover:text-white transition-smooth">TOEIC Preparation</a></li>
-              <li><a href="#" className="hover:text-white transition-smooth">English for Kids</a></li>
-              <li><a href="#" className="hover:text-white transition-smooth">Advanced Speaking</a></li>
+              <li><Link to="/courses" className="hover:text-white transition-smooth">Tiếng Anh Giao Tiếp</Link></li>
+              <li><Link to="/courses" className="hover:text-white transition-smooth">Business English</Link></li>
+              <li><Link to="/courses" className="hover:text-white transition-smooth">IELTS Intensive</Link></li>
+              <li><Link to="/courses" className="hover:text-white transition-smooth">TOEIC Preparation</Link></li>
+              <li><Link to="/courses" className="hover:text-white transition-smooth">English for Kids</Link></li>
+              <li><Link to="/courses" className="hover:text-white transition-smooth">Advanced Speaking</Link></li>
             </ul>
           </div>
 
@@ -62,18 +63,18 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Hỗ Trợ</h4>
             <ul className="space-y-3 text-white/80">
-              <li><a href="#" className="hover:text-white transition-smooth">Hướng dẫn sử dụng</a></li>
-              <li><a href="#" className="hover:text-white transition-smooth">Câu hỏi thường gặp</a></li>
-              <li><a href="#" className="hover:text-white transition-smooth">Chính sách học phí</a></li>
-              <li><a href="#" className="hover:text-white transition-smooth">Chính sách bảo mật</a></li>
-              <li><a href="#" className="hover:text-white transition-smooth">Điều khoản sử dụng</a></li>
+              <li><Link to="/courses" className="hover:text-white transition-smooth">Hướng dẫn sử dụng</Link></li>
+              <li><Link to="/courses" className="hover:text-white transition-smooth">Câu hỏi thường gặp</Link></li>
+              <li><Link to="/courses" className="hover:text-white transition-smooth">Chính sách học phí</Link></li>
+              <li><Link to="/courses" className="hover:text-white transition-smooth">Chính sách bảo mật</Link></li>
+              <li><Link to="/courses" className="hover:text-white transition-smooth">Điều khoản sử dụng</Link></li>
               <li>
-                <a 
-                  href="/dashboard" 
+                <Link 
+                  to="/dashboard" 
                   className="hover:text-white transition-smooth flex items-center gap-2"
                 >
                   Admin Dashboard
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

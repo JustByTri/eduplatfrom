@@ -89,7 +89,7 @@ const Dashboard = () => {
   }, {});
 
   return (
-    <div className="min-h-screen bg-muted/30 py-8">
+    <div className="min-h-screen bg-muted/30 py-8 pt-24">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -101,7 +101,11 @@ const Dashboard = () => {
               <Download className="w-4 h-4 mr-2" />
               Export Leads
             </Button>
-            <Button variant="outline" onClick={() => window.location.href = '/'}>
+            <Button 
+              onClick={() => window.location.href = '/'} 
+              variant="outline" 
+              className="border-white/30 text-white hover:bg-white/10"
+            >
               Về Trang Chủ
             </Button>
           </div>
