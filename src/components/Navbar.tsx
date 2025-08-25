@@ -60,10 +60,10 @@ const Navbar = () => {
               Học Phí
             </button>
             <Link 
-              to="/dashboard" 
+              to="/admin/login" 
               className="text-foreground hover:text-primary transition-smooth font-medium"
             >
-              Dashboard
+              Admin
             </Link>
           </div>
 
@@ -121,11 +121,11 @@ const Navbar = () => {
                 Học Phí
               </button>
               <Link 
-                to="/dashboard" 
+                to="/admin/login" 
                 className="block text-foreground hover:text-primary transition-smooth font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Dashboard
+                Admin
               </Link>
               
               <div className="pt-4 border-t border-border/50 space-y-3">
