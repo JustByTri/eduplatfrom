@@ -118,12 +118,7 @@ const Footer = () => {
           <div className="text-center">
             <h4 className="text-lg font-semibold mb-4">Được Tin Tưởng Bởi</h4>
             <div className="flex flex-wrap justify-center items-center gap-8 opacity-80">
-              <div className="text-lg font-medium">FPT Software</div>
-              <div className="text-lg font-medium">VinGroup</div>
-              <div className="text-lg font-medium">Grab Vietnam</div>
-              <div className="text-lg font-medium">Samsung</div>
-              <div className="text-lg font-medium">Shopee</div>
-              <div className="text-lg font-medium">Tiki</div>
+         
             </div>
           </div>
         </div>

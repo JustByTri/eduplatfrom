@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useLeadSubmission } from "@/hooks/useAPI";
 import { 
   Check, 
   Crown, 
@@ -23,6 +24,13 @@ const Pricing = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const { toast } = useToast();
+  const { 
+    submitLead, 
+    isSubmitting, 
+    success, 
+    error,
+    resetState 
+  } = useLeadSubmission();
 
   const plans = [
     {
@@ -97,42 +105,26 @@ const Pricing = () => {
       return;
     }
 
-    // Simulate API call to save lead
     try {
-      const leadData = {
+      // Reset any previous state
+      resetState();
+      
+      // Submit lead via API
+      await submitLead({
         name,
         email, 
         phone,
-        selectedPlan,
-        timestamp: new Date().toISOString(),
-        source: 'landing_page'
-      };
-
-      // Save to localStorage for demo (in real app, this would be API call)
-      const existingLeads = JSON.parse(localStorage.getItem('leads') || '[]');
-      existingLeads.push(leadData);
-      localStorage.setItem('leads', JSON.stringify(existingLeads));
-
-      // Increment lead counter
-      const currentCount = parseInt(localStorage.getItem('leadCount') || '0');
-      localStorage.setItem('leadCount', (currentCount + 1).toString());
-
-      toast({
-        title: "🎉 Đăng ký thành công!",
-        description: "Chúng tôi sẽ liên hệ với bạn trong 24h để kích hoạt khóa học miễn phí.",
+        selected_plan: selectedPlan,
       });
 
-      // Reset form
+      // Reset form on success
       setEmail("");
       setName("");
       setPhone("");
       
     } catch (error) {
-      toast({
-        title: "Có lỗi xảy ra",
-        description: "Vui lòng thử lại sau ít phút",
-        variant: "destructive"
-      });
+      // Error already handled by the hook
+      console.error('Form submission error:', error);
     }
   };
 
@@ -274,8 +266,9 @@ const Pricing = () => {
                 <Button 
                   type="submit" 
                   className="w-full bg-accent hover:bg-accent-hover text-accent-foreground font-semibold py-3 text-lg shadow-medium transition-smooth transform hover:scale-105"
+                  disabled={isSubmitting}
                 >
-                  🚀 Bắt Đầu Học Thử Miễn Phí
+                  {isSubmitting ? "Đang xử lý..." : "🚀 Bắt Đầu Học Thử Miễn Phí"}
                 </Button>
 
                 <p className="text-sm text-center text-muted-foreground">

@@ -63,7 +63,7 @@ const Navbar = () => {
               to="/admin/login" 
               className="text-foreground hover:text-primary transition-smooth font-medium"
             >
-              Admin
+           Management
             </Link>
           </div>
 
@@ -125,7 +125,7 @@ const Navbar = () => {
                 className="block text-foreground hover:text-primary transition-smooth font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Admin
+                Management
               </Link>
               
               <div className="pt-4 border-t border-border/50 space-y-3">

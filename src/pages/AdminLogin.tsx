@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Lock, User, Shield } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const AdminLogin = () => {
   const [credentials, setCredentials] = useState({
@@ -14,45 +14,21 @@ const AdminLogin = () => {
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   
   const navigate = useNavigate();
-  const { toast } = useToast();
-
-  // Demo credentials - trong thực tế sẽ hash password và dùng JWT
-  const ADMIN_CREDENTIALS = {
-    username: 'admin',
-    password: 'admin123'
-  };
+  const { login, loading } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setIsLoading(true);
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    if (credentials.username === ADMIN_CREDENTIALS.username && 
-        credentials.password === ADMIN_CREDENTIALS.password) {
-      
-      // Set authentication token
-      localStorage.setItem('adminToken', 'authenticated');
-      localStorage.setItem('adminLoginTime', Date.now().toString());
-      
-      toast({
-        title: "Đăng nhập thành công!",
-        description: "Chào mừng Admin đến với dashboard.",
-        duration: 3000,
-      });
-      
+    try {
+      await login(credentials.username, credentials.password);
       navigate('/dashboard');
-    } else {
+    } catch (error) {
       setError('Tên đăng nhập hoặc mật khẩu không đúng!');
     }
-    
-    setIsLoading(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,7 +76,7 @@ const AdminLogin = () => {
                     placeholder="Nhập tên đăng nhập"
                     className="pl-10"
                     required
-                    disabled={isLoading}
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -119,13 +95,13 @@ const AdminLogin = () => {
                     placeholder="Nhập mật khẩu"
                     className="pl-10 pr-10"
                     required
-                    disabled={isLoading}
+                    disabled={loading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                    disabled={isLoading}
+                    disabled={loading}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -143,9 +119,9 @@ const AdminLogin = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-blue-600 hover:bg-blue-700"
-                disabled={isLoading}
+                disabled={loading}
               >
-                {isLoading ? "Đang đăng nhập..." : "Đăng Nhập"}
+                {loading ? "Đang đăng nhập..." : "Đăng Nhập"}
               </Button>
             </form>
 

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useDashboardData } from "@/hooks/useAPI";
 import { 
   Users, 
   Eye, 
@@ -32,17 +33,24 @@ interface Lead {
 }
 
 const Dashboard = () => {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [analytics, setAnalytics] = useState({
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const { toast } = useToast();
+  const { 
+    data, 
+    loading, 
+    error, 
+    refresh 
+  } = useDashboardData();
+
+  // Extract data with fallbacks
+  const leads = data?.leads || [];
+  const analytics = data?.analytics || {
     totalVisits: 0,
     totalLeads: 0,
     totalRevenue: 0,
     conversionRate: 0
-  });
-
-  const navigate = useNavigate();
-  const { logout } = useAuth();
-  const { toast } = useToast();
+  };
 
   const handleLogout = () => {
     logout();
@@ -53,32 +61,6 @@ const Dashboard = () => {
     });
     navigate('/admin/login');
   };
-
-  useEffect(() => {
-    // Load data from localStorage
-    const loadData = () => {
-      const storedLeads = JSON.parse(localStorage.getItem('leads') || '[]');
-      setLeads(storedLeads);
-
-      const totalVisits = parseInt(localStorage.getItem('totalVisits') || '0');
-      const totalLeads = storedLeads.length;
-      const totalRevenue = totalLeads * 599000; // Average plan price
-      const conversionRate = totalVisits > 0 ? (totalLeads / totalVisits) * 100 : 0;
-
-      setAnalytics({
-        totalVisits,
-        totalLeads,
-        totalRevenue,
-        conversionRate
-      });
-    };
-
-    loadData();
-    
-    // Update every 5 seconds
-    const interval = setInterval(loadData, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   const formatRevenue = (amount: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -117,6 +99,31 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-muted/30 py-8 pt-24">
       <div className="container mx-auto px-4">
+        {/* Loading State */}
+        {loading && (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <Activity className="h-8 w-8 animate-spin mx-auto mb-2" />
+              <p>Đang tải dữ liệu...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-700">Lỗi: {error}</p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={refresh}
+              className="mt-2"
+            >
+              Thử lại
+            </Button>
+          </div>
+        )}
+
         {/* Header with Admin Info and Actions */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">

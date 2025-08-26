@@ -131,12 +131,7 @@ const Testimonials = () => {
             Được tin tưởng bởi nhân viên từ các công ty hàng đầu
           </p>
           <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-            <div className="text-2xl font-bold">FPT Software</div>
-            <div className="text-2xl font-bold">VinGroup</div>
-            <div className="text-2xl font-bold">Grab</div>
-            <div className="text-2xl font-bold">Samsung</div>
-            <div className="text-2xl font-bold">Shopee</div>
-            <div className="text-2xl font-bold">Tiki</div>
+       
           </div>
         </div>
       </div>
