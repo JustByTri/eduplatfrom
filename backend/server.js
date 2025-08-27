@@ -1,6 +1,7 @@
 // Disable SSL certificate verification (for development/testing only)
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
+// EnglishMaster Pro Backend - Database should be "Eng"
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');

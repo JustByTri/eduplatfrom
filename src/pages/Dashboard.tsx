@@ -45,13 +45,18 @@ const Dashboard = () => {
   } = useDashboardData();
 
   // Extract data with fallbacks
-  const leads = data?.leads || [];
-  const analytics = data?.analytics || {
-    totalVisits: 0,
-    totalLeads: 0,
-    totalRevenue: 0,
-    conversionRate: 0
+  const leads = data?.edu_leads || [];
+  const analytics = data?.edu_visitors || {
+    total_visits: 0
   };
+  const orders = data?.edu_orders || {
+    total_orders: 0,
+    total_revenue: 0
+  };
+  const metrics = data?.metrics || {
+    conversion_rate: 0
+  };
+  const planDistributionData = data?.plan_distribution || [];
 
   const handleLogout = () => {
     logout();
@@ -71,10 +76,19 @@ const Dashboard = () => {
   };
 
   const exportLeads = () => {
+    if (!Array.isArray(leads) || leads.length === 0) {
+      toast({
+        title: "Không có dữ liệu",
+        description: "Chưa có leads để export.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const csvContent = "data:text/csv;charset=utf-8," 
       + "Name,Email,Phone,Plan,Date,Source\n"
       + leads.map(lead => 
-          `${lead.name},${lead.email},${lead.phone},${lead.selectedPlan},${new Date(lead.timestamp).toLocaleDateString()},${lead.source}`
+          `${lead.name},${lead.email},${lead.phone},${lead.selected_plan},${new Date(lead.created_at).toLocaleDateString()},website`
         ).join("\n");
 
     const encodedUri = encodeURI(csvContent);
