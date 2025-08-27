@@ -1,6 +1,6 @@
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
-  (import.meta.env.DEV ? 'http://localhost:5000/api' : 'https://englishmaster-api.onrender.com/api');
+  (import.meta.env.DEV ? 'http://localhost:5000/api' : 'https://eduplatfrom-2.onrender.com/api');
 
 // API Service Class
 class APIService {
