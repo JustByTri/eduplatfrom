@@ -124,17 +124,6 @@ const AdminLogin = () => {
                 {loading ? "Đang đăng nhập..." : "Đăng Nhập"}
               </Button>
             </form>
-
-            {/* Demo Credentials Info */}
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg border">
-              <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                Demo Credentials:
-              </h4>
-              <div className="text-sm text-gray-600 space-y-1">
-                <p><strong>Username:</strong> admin</p>
-                <p><strong>Password:</strong> admin123</p>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
