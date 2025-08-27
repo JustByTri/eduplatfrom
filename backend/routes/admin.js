@@ -110,18 +110,42 @@ router.get('/verify', verifyToken, (req, res) => {
 // Get admin dashboard data
 router.get('/dashboard', verifyToken, async (req, res) => {
   try {
-    // Return mock data for now (safe approach)
-    res.json({
+    // Mock data that matches frontend expectations
+    const dashboardData = {
       edu_visitors: {
-        total_visits: 156,
-        unique_visitors: 98,
-        today_visits: 23
+        totalVisits: 1567,
+        totalLeads: 18,
+        totalRevenue: 15000000,
+        conversionRate: 11.5,
+        uniqueVisitors: 982,
+        todayVisits: 23
       },
-      edu_leads: {
-        total_leads: 18,
-        today_leads: 5,
-        converted_leads: 3
-      },
+      edu_leads: [
+        {
+          name: "Nguyễn Văn An",
+          email: "van.an@gmail.com", 
+          phone: "0901234567",
+          selected_plan: "premium",
+          created_at: "2025-08-27T10:30:00Z",
+          source: "website"
+        },
+        {
+          name: "Trần Thị Bình",
+          email: "thi.binh@gmail.com",
+          phone: "0987654321", 
+          selected_plan: "basic",
+          created_at: "2025-08-26T14:15:00Z",
+          source: "website"
+        },
+        {
+          name: "Lê Minh Cường",
+          email: "minh.cuong@gmail.com",
+          phone: "0912345678",
+          selected_plan: "enterprise", 
+          created_at: "2025-08-25T09:45:00Z",
+          source: "website"
+        }
+      ],
       edu_orders: {
         total_orders: 8,
         completed_orders: 6,
@@ -134,10 +158,12 @@ router.get('/dashboard', verifyToken, async (req, res) => {
       },
       plan_distribution: [
         { selected_plan: 'basic', count: 8 },
-        { selected_plan: 'premium', count: 7 },
+        { selected_plan: 'premium', count: 7 }, 
         { selected_plan: 'enterprise', count: 3 }
       ]
-    });
+    };
+
+    res.json(dashboardData);
   } catch (error) {
     console.error('Dashboard data error:', error);
     res.status(500).json({
