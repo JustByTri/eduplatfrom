@@ -35,20 +35,21 @@ const verifyToken = async (req, res, next) => {
 // Admin login
 router.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!username || !password) {
+    const loginField = username || email;
+    if (!loginField || !password) {
       return res.status(400).json({
-        error: 'Username and password are required'
+        error: 'Username/email and password are required'
       });
     }
 
-    // Find admin user
+    // Find admin user by username or email
     const [admins] = await pool.execute(`
       SELECT id, username, email, password_hash, role, is_active
       FROM edu_admin_users 
-      WHERE username = ? AND is_active = true
-    `, [username]);
+      WHERE (username = ? OR email = ?) AND is_active = true
+    `, [loginField, loginField]);
 
     if (admins.length === 0) {
       return res.status(401).json({

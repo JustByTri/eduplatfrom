@@ -103,14 +103,14 @@ const createTables = async () => {
 const seedAdminUser = async () => {
   try {
     const bcrypt = require('bcryptjs');
-    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 10);
+    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123456', 10);
     
     await pool.execute(`
       INSERT IGNORE INTO edu_admin_users (username, email, password_hash, role) 
       VALUES (?, ?, ?, ?)
     `, [
       process.env.ADMIN_USERNAME || 'admin',
-      'admin@englishmaster.pro',
+      'admin@eduplatform.com',
       hashedPassword,
       'admin'
     ]);
