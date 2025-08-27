@@ -10,14 +10,12 @@ const dbConfig = {
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: false  // Disable SSL completely
 };
 
 const pool = mysql.createPool(dbConfig);
 
-// Test connection
+
 const testConnection = async () => {
   try {
     const connection = await pool.getConnection();

@@ -1,9 +1,9 @@
 # 🎯 EnglishMaster Pro - Demo & Production Test
 
 ## 📊 **Production URLs**
-- **Frontend**: https://eduplatfrom.onrender.com/
-- **Backend**: https://eduplatfrom-backend.onrender.com/
-- **Database**: TiDB Cloud (SpeakAI)
+- **Frontend**: https://eduplatfrom.vercel.app/
+- **Backend**: https://eduplatfrom-2.onrender.com/
+- **Database**: TiDB Cloud (Eng - Empty Database)
 
 ## 🧪 **Manual Test Scenarios**
 
@@ -68,18 +68,18 @@ Password: admin123456
 - **Lighthouse Score**: Target 90+
 
 ## 🚀 **Deployment Status**
-- **Frontend**: ✅ Deployed successfully
-- **Backend**: 🔄 Checking deployment
-- **Database**: ✅ Connected to TiDB Cloud
-- **Environment**: ✅ Production ready
+- **Frontend**: ✅ Deployed on Vercel
+- **Backend**: ✅ Deployed on Render 
+- **Database**: ⚠️ Empty database "Eng" - needs initialization
+- **Environment**: 🔄 Pending database setup
 
 ---
 
 ## 🎯 **Next Steps**
-1. Verify backend deployment
-2. Test full user flow
-3. Generate final report
-4. Submit project
+1. **Initialize database "Eng"** with tables and admin user
+2. Test full user flow end-to-end
+3. Verify admin dashboard access
+4. Complete final project report
 
-**Last Updated**: August 27, 2025
-**Status**: Production Ready 🚀
+**Last Updated**: August 27, 2025  
+**Status**: 90% Complete - Database initialization pending �
