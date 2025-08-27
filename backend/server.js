@@ -63,6 +63,38 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Debug endpoint to check database and admin user
+app.get('/debug', async (req, res) => {
+  try {
+    const { pool } = require('./config/database');
+    
+    // Check database connection
+    const [tables] = await pool.execute('SHOW TABLES');
+    
+    // Check if admin user exists
+    let adminCheck = null;
+    try {
+      const [admins] = await pool.execute('SELECT id, username, email, is_active FROM edu_admin_users LIMIT 5');
+      adminCheck = admins;
+    } catch (error) {
+      adminCheck = { error: error.message };
+    }
+    
+    res.json({
+      database: process.env.DB_NAME,
+      tables: tables.map(t => Object.values(t)[0]),
+      admin_users: adminCheck,
+      env: {
+        NODE_ENV: process.env.NODE_ENV,
+        DB_HOST: process.env.DB_HOST?.substring(0, 20) + '...',
+        DB_NAME: process.env.DB_NAME
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // API Routes
 app.use('/api/visitors', visitorsRoutes);
 app.use('/api/leads', leadsRoutes);

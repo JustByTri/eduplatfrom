@@ -10,7 +10,7 @@ const dbConfig = {
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  ssl: false  // Disable SSL completely
+  ssl: false  
 };
 
 const pool = mysql.createPool(dbConfig);
