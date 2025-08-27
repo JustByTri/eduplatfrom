@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useDashboardData } from "@/hooks/useAPI";
+import AnalyticsCharts from "@/components/AnalyticsCharts";
 import { 
   Users, 
   Eye, 
@@ -349,6 +350,9 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Advanced Analytics Charts */}
+        <AnalyticsCharts dashboardData={data} />
       </div>
     </div>
   );

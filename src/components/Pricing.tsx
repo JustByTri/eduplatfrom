@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLeadSubmission } from "@/hooks/useAPI";
+import PaymentModal from "@/components/PaymentModal";
 import { 
   Check, 
   Crown, 
@@ -23,6 +24,7 @@ const Pricing = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const { toast } = useToast();
   const { 
     submitLead, 
@@ -117,10 +119,8 @@ const Pricing = () => {
         selected_plan: selectedPlan,
       });
 
-      // Reset form on success
-      setEmail("");
-      setName("");
-      setPhone("");
+      // Show payment modal after successful lead submission
+      setShowPaymentModal(true);
       
     } catch (error) {
       // Error already handled by the hook
@@ -300,6 +300,20 @@ const Pricing = () => {
             </div>
           </div>
         </div>
+
+        {/* Payment Modal */}
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => {
+            setShowPaymentModal(false);
+            // Reset form after payment modal closes
+            setEmail("");
+            setName("");
+            setPhone("");
+          }}
+          selectedPlan={plans.find(p => p.id === selectedPlan) || plans[1]}
+          leadData={{ name, email, phone }}
+        />
       </div>
     </section>
   );
