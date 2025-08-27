@@ -47,7 +47,10 @@ const Dashboard = () => {
   // Extract data with fallbacks
   const leads = data?.edu_leads || [];
   const analytics = data?.edu_visitors || {
-    total_visits: 0
+    totalVisits: 0,
+    totalLeads: 0,
+    totalRevenue: 0,
+    conversionRate: 0
   };
   const orders = data?.edu_orders || {
     total_orders: 0,
@@ -106,10 +109,11 @@ const Dashboard = () => {
     });
   };
 
-  const planDistribution = leads.reduce((acc: any, lead) => {
-    acc[lead.selectedPlan] = (acc[lead.selectedPlan] || 0) + 1;
+  const planDistribution = Array.isArray(leads) && leads.length > 0 ? leads.reduce((acc: any, lead) => {
+    const planName = lead?.selectedPlan || lead?.selected_plan || 'unknown';
+    acc[planName] = (acc[planName] || 0) + 1;
     return acc;
-  }, {});
+  }, {}) : {};
 
   return (
     <div className="min-h-screen bg-muted/30 py-8 pt-24">
@@ -188,7 +192,7 @@ const Dashboard = () => {
               <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{analytics.totalVisits.toLocaleString()}</div>
+              <div className="text-2xl font-bold">{(analytics?.totalVisits || 0).toLocaleString()}</div>
               <p className="text-xs text-muted-foreground">
                 +{Math.floor(Math.random() * 20 + 5)}% từ tuần trước
               </p>
@@ -201,7 +205,7 @@ const Dashboard = () => {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-secondary">{analytics.totalLeads}</div>
+              <div className="text-2xl font-bold text-secondary">{analytics?.totalLeads || 0}</div>
               <p className="text-xs text-muted-foreground">
                 +{Math.floor(Math.random() * 15 + 3)} leads mới hôm nay
               </p>
@@ -214,9 +218,9 @@ const Dashboard = () => {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-accent">{formatRevenue(analytics.totalRevenue)}</div>
+              <div className="text-2xl font-bold text-accent">{formatRevenue(analytics?.totalRevenue || 0)}</div>
               <p className="text-xs text-muted-foreground">
-                Từ {analytics.totalLeads} leads tiềm năng
+                Từ {analytics?.totalLeads || 0} leads tiềm năng
               </p>
             </CardContent>
           </Card>
@@ -227,7 +231,7 @@ const Dashboard = () => {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-success">{analytics.conversionRate.toFixed(1)}%</div>
+              <div className="text-2xl font-bold text-success">{(analytics?.conversionRate || 0).toFixed(1)}%</div>
               <p className="text-xs text-muted-foreground">
                 Leads/Visits ratio
               </p>
@@ -269,18 +273,18 @@ const Dashboard = () => {
                           </div>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Calendar className="h-3 w-3" />
-                            <span>{new Date(lead.timestamp).toLocaleDateString('vi-VN')}</span>
+                            <span>{new Date(lead.created_at || lead.timestamp || Date.now()).toLocaleDateString('vi-VN')}</span>
                           </div>
                         </div>
                         <div className="text-right">
                           <Badge 
-                            variant={lead.selectedPlan === 'premium' ? 'default' : 
-                                   lead.selectedPlan === 'enterprise' ? 'secondary' : 'outline'}
+                            variant={(lead.selected_plan || lead.selectedPlan) === 'premium' ? 'default' : 
+                                   (lead.selected_plan || lead.selectedPlan) === 'enterprise' ? 'secondary' : 'outline'}
                             className="mb-1"
                           >
-                            {lead.selectedPlan}
+                            {lead.selected_plan || lead.selectedPlan || 'basic'}
                           </Badge>
-                          <div className="text-xs text-muted-foreground">{lead.source}</div>
+                          <div className="text-xs text-muted-foreground">{lead.source || 'website'}</div>
                         </div>
                       </div>
                     </div>
