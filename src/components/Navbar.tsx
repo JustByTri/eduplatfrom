@@ -63,7 +63,7 @@ const Navbar = () => {
               to="/admin/login" 
               className="text-foreground hover:text-primary transition-smooth font-medium"
             >
-           Management
+         Quản lý
             </Link>
           </div>
 

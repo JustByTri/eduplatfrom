@@ -63,8 +63,23 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    version: '1.0.3' // Force deploy version
   });
+});
+
+// CORS test endpoint
+app.get('/test-cors', (req, res) => {
+  res.json({
+    message: 'CORS test successful',
+    origin: req.headers.origin,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Options test for preflight
+app.options('/test-cors', (req, res) => {
+  res.status(200).end();
 });
 
 // Debug endpoint to check database and admin user
