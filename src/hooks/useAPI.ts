@@ -208,12 +208,27 @@ export const useAuth = () => {
 
   const checkAuth = async () => {
     try {
+      setLoading(true);
+      
+      // Check if token exists first
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        setIsAuthenticated(false);
+        setUser(null);
+        return;
+      }
+      
       const result = await apiService.verifyToken();
       if (result.success) {
         setIsAuthenticated(true);
         setUser(result.admin);
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
+        apiService.logout();
       }
     } catch (error) {
+      console.error('Auth verification failed:', error);
       setIsAuthenticated(false);
       setUser(null);
       apiService.logout();

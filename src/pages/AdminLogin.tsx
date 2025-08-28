@@ -10,8 +10,8 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const AdminLogin = () => {
   const [credentials, setCredentials] = useState({
-    username: 'admin@eduplatform.com', // Default email
-    password: 'admin123456' // Default password for testing
+    username: 'admin@englishmaster.pro', // Correct email from database
+    password: 'admin123' // Correct password from database
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -80,7 +80,7 @@ const AdminLogin = () => {
                     type="text"
                     value={credentials.username}
                     onChange={handleChange}
-                    placeholder="admin@eduplatform.com hoặc admin"
+                    placeholder="admin@englishmaster.pro hoặc admin"
                     className="pl-10"
                     required
                     disabled={loading}
