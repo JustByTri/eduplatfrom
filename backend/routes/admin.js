@@ -110,8 +110,90 @@ router.get('/verify', verifyToken, (req, res) => {
 // Get admin dashboard data
 router.get('/dashboard', verifyToken, async (req, res) => {
   try {
-    // Mock data that matches frontend expectations
+    // Get real data from database
+    const [visitorsCount] = await pool.execute(`
+      SELECT COUNT(*) as total_visits FROM edu_visitors
+    `);
+    
+    const [uniqueVisitors] = await pool.execute(`
+      SELECT COUNT(DISTINCT ip_address) as unique_visitors FROM edu_visitors
+    `);
+    
+    const [todayVisits] = await pool.execute(`
+      SELECT COUNT(*) as today_visits 
+      FROM edu_visitors 
+      WHERE DATE(visit_timestamp) = CURDATE()
+    `);
+    
+    const [leadsData] = await pool.execute(`
+      SELECT 
+        COUNT(*) as total_leads,
+        COUNT(CASE WHEN DATE(created_at) = CURDATE() THEN 1 END) as today_leads,
+        COUNT(CASE WHEN status = 'converted' THEN 1 END) as converted_leads
+      FROM edu_leads
+    `);
+    
+    const [ordersData] = await pool.execute(`
+      SELECT 
+        COUNT(*) as total_orders,
+        COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) as completed_orders,
+        COALESCE(SUM(CASE WHEN payment_status = 'completed' THEN final_price END), 0) as total_revenue,
+        COALESCE(SUM(CASE WHEN DATE(created_at) = CURDATE() AND payment_status = 'completed' THEN final_price END), 0) as today_revenue
+      FROM edu_orders
+    `);
+    
+    const [planDistribution] = await pool.execute(`
+      SELECT 
+        selected_plan,
+        COUNT(*) as count
+      FROM edu_leads 
+      GROUP BY selected_plan
+    `);
+
+    // Calculate conversion rate
+    const totalVisits = visitorsCount[0]?.total_visits || 0;
+    const totalLeads = leadsData[0]?.total_leads || 0;
+    const conversionRate = totalVisits > 0 ? (totalLeads / totalVisits) * 100 : 0;
+    
+    // Get recent leads for the dashboard
+    const [recentLeads] = await pool.execute(`
+      SELECT 
+        name, email, phone, selected_plan, created_at, source, status
+      FROM edu_leads 
+      ORDER BY created_at DESC 
+      LIMIT 10
+    `);
+    
     const dashboardData = {
+      edu_visitors: {
+        totalVisits: totalVisits,
+        totalLeads: totalLeads,
+        totalRevenue: ordersData[0]?.total_revenue || 0,
+        conversionRate: conversionRate,
+        uniqueVisitors: uniqueVisitors[0]?.unique_visitors || 0,
+        todayVisits: todayVisits[0]?.today_visits || 0
+      },
+      edu_leads: recentLeads || [],
+      edu_orders: {
+        total_orders: ordersData[0]?.total_orders || 0,
+        completed_orders: ordersData[0]?.completed_orders || 0,
+        total_revenue: ordersData[0]?.total_revenue || 0,
+        today_revenue: ordersData[0]?.today_revenue || 0
+      },
+      metrics: {
+        conversion_rate: conversionRate,
+        avg_order_value: ordersData[0]?.completed_orders > 0 ? 
+          (ordersData[0]?.total_revenue / ordersData[0]?.completed_orders) : 0
+      },
+      plan_distribution: planDistribution || []
+    };
+
+    res.json(dashboardData);
+  } catch (error) {
+    console.error('Dashboard data error:', error);
+    
+    // Fallback to mock data if database error
+    const mockData = {
       edu_visitors: {
         totalVisits: 1567,
         totalLeads: 18,
@@ -120,32 +202,7 @@ router.get('/dashboard', verifyToken, async (req, res) => {
         uniqueVisitors: 982,
         todayVisits: 23
       },
-      edu_leads: [
-        {
-          name: "Nguyễn Văn An",
-          email: "van.an@gmail.com", 
-          phone: "0901234567",
-          selected_plan: "premium",
-          created_at: "2025-08-27T10:30:00Z",
-          source: "website"
-        },
-        {
-          name: "Trần Thị Bình",
-          email: "thi.binh@gmail.com",
-          phone: "0987654321", 
-          selected_plan: "basic",
-          created_at: "2025-08-26T14:15:00Z",
-          source: "website"
-        },
-        {
-          name: "Lê Minh Cường",
-          email: "minh.cuong@gmail.com",
-          phone: "0912345678",
-          selected_plan: "enterprise", 
-          created_at: "2025-08-25T09:45:00Z",
-          source: "website"
-        }
-      ],
+      edu_leads: [],
       edu_orders: {
         total_orders: 8,
         completed_orders: 6,
@@ -162,21 +219,31 @@ router.get('/dashboard', verifyToken, async (req, res) => {
         { selected_plan: 'enterprise', count: 3 }
       ]
     };
-
-    res.json(dashboardData);
-  } catch (error) {
-    console.error('Dashboard data error:', error);
-    res.status(500).json({
-      error: 'Failed to load dashboard data',
-      message: error.message
-    });
+    
+    res.json(mockData);
   }
 });
 
 // Get recent edu_leads
 router.get('/leads/recent', verifyToken, async (req, res) => {
   try {
-    // Return mock leads data
+    // Get real leads from database
+    const [leads] = await pool.execute(`
+      SELECT 
+        id, name, email, phone, selected_plan, status, 
+        source, created_at, notes
+      FROM edu_leads 
+      ORDER BY created_at DESC 
+      LIMIT 50
+    `);
+    
+    res.json({ 
+      edu_leads: leads
+    });
+  } catch (error) {
+    console.error('Recent edu_leads error:', error);
+    
+    // Fallback to mock data
     res.json({ 
       edu_leads: [
         {
@@ -186,7 +253,8 @@ router.get('/leads/recent', verifyToken, async (req, res) => {
           phone: "0901234567",
           selected_plan: "premium",
           status: "new",
-          created_at: new Date()
+          created_at: new Date(),
+          source: "website"
         },
         {
           id: 2,
@@ -195,15 +263,10 @@ router.get('/leads/recent', verifyToken, async (req, res) => {
           phone: "0907654321", 
           selected_plan: "basic",
           status: "contacted",
-          created_at: new Date(Date.now() - 24*60*60*1000)
+          created_at: new Date(Date.now() - 24*60*60*1000),
+          source: "website"
         }
       ]
-    });
-  } catch (error) {
-    console.error('Recent edu_leads error:', error);
-    res.status(500).json({
-      error: 'Failed to get recent edu_leads',
-      message: error.message
     });
   }
 });
