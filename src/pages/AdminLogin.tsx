@@ -10,8 +10,8 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const AdminLogin = () => {
   const [credentials, setCredentials] = useState({
-    username: 'admin@englishmaster.pro', // Correct email from database
-    password: 'admin123' // Correct password from database
+    username: 'admin@eduplatform.com', // Updated to correct email
+    password: 'admin123456' // Updated to correct password
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
