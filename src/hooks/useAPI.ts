@@ -13,7 +13,7 @@ export const useVisitorTracking = () => {
       await apiService.trackVisitor({});
       setIsTracked(true);
       
-      // Store in localStorage to avoid duplicate tracking
+     
       localStorage.setItem('visitor_tracked', 'true');
     } catch (error) {
       console.error('Failed to track visitor:', error);
@@ -32,7 +32,7 @@ export const useVisitorTracking = () => {
   return { isTracked, trackVisitor };
 };
 
-// Custom hook for lead submission
+
 export const useLeadSubmission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);

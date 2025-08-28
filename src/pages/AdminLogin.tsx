@@ -10,8 +10,8 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const AdminLogin = () => {
   const [credentials, setCredentials] = useState({
-    username: '',
-    password: ''
+    username: 'admin@eduplatform.com', // Default email
+    password: 'admin123456' // Default password for testing
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -24,9 +24,16 @@ const AdminLogin = () => {
     setError('');
 
     try {
+      console.log('Attempting login with:', { 
+        username: credentials.username, 
+        password: credentials.password.length > 0 ? '[PROVIDED]' : '[EMPTY]' 
+      });
+      
       await login(credentials.username, credentials.password);
+      console.log('Login successful, navigating to dashboard');
       navigate('/dashboard');
     } catch (error) {
+      console.error('Login error:', error);
       setError('Tên đăng nhập hoặc mật khẩu không đúng!');
     }
   };
@@ -64,7 +71,7 @@ const AdminLogin = () => {
             <form onSubmit={handleLogin} className="space-y-4">
               {/* Username Field */}
               <div className="space-y-2">
-                <Label htmlFor="username">Tên đăng nhập</Label>
+                <Label htmlFor="username">Email hoặc Tên đăng nhập</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
@@ -73,7 +80,7 @@ const AdminLogin = () => {
                     type="text"
                     value={credentials.username}
                     onChange={handleChange}
-                    placeholder="Nhập tên đăng nhập"
+                    placeholder="admin@eduplatform.com hoặc admin"
                     className="pl-10"
                     required
                     disabled={loading}

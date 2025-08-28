@@ -48,10 +48,15 @@ class APIService {
   }
 
   // Auth methods
-  async login(username: string, password: string) {
+  async login(usernameOrEmail: string, password: string) {
+    // Support both username and email login
+    const loginData = usernameOrEmail.includes('@') 
+      ? { email: usernameOrEmail, password }
+      : { username: usernameOrEmail, password };
+    
     const data = await this.request('/admin/login', {
       method: 'POST',
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify(loginData),
     });
 
     if (data.success && data.token) {

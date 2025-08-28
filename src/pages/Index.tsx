@@ -10,7 +10,7 @@ const Index = () => {
   const { trackVisitor } = useVisitorTracking();
 
   useEffect(() => {
-    // Track visitor when the page loads
+
     trackVisitor();
   }, []);
 

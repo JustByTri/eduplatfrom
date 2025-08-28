@@ -125,7 +125,7 @@ const Navbar = () => {
                 className="block text-foreground hover:text-primary transition-smooth font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Management
+                Quản lý 
               </Link>
               
               <div className="pt-4 border-t border-border/50 space-y-3">

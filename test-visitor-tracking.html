@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Visitor Tracking</title>
+</head>
+<body>
+    <h1>Test Visitor Tracking</h1>
+    <button onclick="testTracking()">Test Track Visitor</button>
+    <button onclick="checkStats()">Check Visitor Stats</button>
+    <div id="result"></div>
+
+    <script>
+        const API_BASE = 'https://eduplatfrom-2.onrender.com/api';
+        
+        async function testTracking() {
+            try {
+                const visitorData = {
+                    ip_address: '127.0.0.1',
+                    user_agent: navigator.userAgent,
+                    referrer: document.referrer || 'direct',
+                    landing_page: window.location.pathname
+                };
+
+                const response = await fetch(`${API_BASE}/visitors/track`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(visitorData)
+                });
+
+                const result = await response.json();
+                document.getElementById('result').innerHTML = 
+                    '<h3>Tracking Result:</h3>' + 
+                    '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    '<h3>Error:</h3>' + error.message;
+            }
+        }
+
+        async function checkStats() {
+            try {
+                const response = await fetch(`${API_BASE}/visitors/stats`);
+                const result = await response.json();
+                document.getElementById('result').innerHTML = 
+                    '<h3>Visitor Stats:</h3>' + 
+                    '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    '<h3>Error:</h3>' + error.message;
+            }
+        }
+
+        // Auto track when page loads
+        window.addEventListener('load', () => {
+            console.log('Page loaded, testing visitor tracking...');
+            testTracking();
+        });
+    </script>
+</body>
+</html>
