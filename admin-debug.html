@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Login Test - Direct API</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .test-section { background: #f5f5f5; padding: 20px; margin: 10px 0; border-radius: 8px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .success { color: green; }
+        .error { color: red; }
+        pre { background: white; padding: 15px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Admin Login Debug Tool</h1>
+    
+    <div class="test-section">
+        <h3>1. Test Backend Health</h3>
+        <button onclick="testHealth()">Check Backend Health</button>
+        <div id="health-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Test CORS</h3>
+        <button onclick="testCORS()">Test CORS Headers</button>
+        <div id="cors-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Test Admin Login</h3>
+        <button onclick="testLogin()">Test Admin Login</button>
+        <div id="login-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Manual Login Form</h3>
+        <input type="email" id="email" value="admin@eduplatform.com" placeholder="Email">
+        <input type="password" id="password" value="admin123456" placeholder="Password">
+        <button onclick="manualLogin()">Manual Login</button>
+        <div id="manual-result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://eduplatfrom-2.onrender.com';
+        
+        function log(elementId, content, isError = false) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<pre class="${isError ? 'error' : 'success'}">${content}</pre>`;
+        }
+
+        async function testHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                log('health-result', `✅ Backend Online!\n${JSON.stringify(data, null, 2)}`);
+            } catch (error) {
+                log('health-result', `❌ Backend Error: ${error.message}`, true);
+            }
+        }
+
+        async function testCORS() {
+            try {
+                const response = await fetch(`${API_BASE}/test-cors`);
+                const data = await response.json();
+                log('cors-result', `✅ CORS Working!\n${JSON.stringify(data, null, 2)}`);
+            } catch (error) {
+                log('cors-result', `❌ CORS Error: ${error.message}`, true);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@eduplatform.com',
+                        password: 'admin123456'
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    log('login-result', `✅ Login Success!\n${JSON.stringify(data, null, 2)}`);
+                } else {
+                    log('login-result', `❌ Login Failed!\n${JSON.stringify(data, null, 2)}`, true);
+                }
+            } catch (error) {
+                log('login-result', `❌ Network Error: ${error.message}`, true);
+            }
+        }
+
+        async function manualLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    log('manual-result', `✅ Manual Login Success!\n${JSON.stringify(data, null, 2)}`);
+                    
+                    // Save token for dashboard access
+                    localStorage.setItem('adminToken', data.token);
+                    
+                    // Try accessing dashboard
+                    setTimeout(() => {
+                        window.open('https://eduplatfrom.vercel.app/dashboard', '_blank');
+                    }, 1000);
+                } else {
+                    log('manual-result', `❌ Manual Login Failed!\n${JSON.stringify(data, null, 2)}`, true);
+                }
+            } catch (error) {
+                log('manual-result', `❌ Manual Login Error: ${error.message}`, true);
+            }
+        }
+
+        // Auto test on load
+        window.addEventListener('load', () => {
+            testHealth();
+            setTimeout(testCORS, 1000);
+        });
+    </script>
+</body>
+</html>
