@@ -10,6 +10,7 @@ require('dotenv').config();
 
 const { testConnection } = require('./config/database');
 const { createTables, seedAdminUser } = require('./config/init-db');
+const { createEmailTable } = require('./services/emailTracking');
 
 // Import routes
 const visitorsRoutes = require('./routes/visitors');
@@ -145,6 +146,7 @@ const startServer = async () => {
     // Create tables and seed data
     await createTables();
     await seedAdminUser();
+    await createEmailTable();
     
     // Start server
     app.listen(PORT, () => {

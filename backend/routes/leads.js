@@ -1,5 +1,6 @@
 const express = require('express');
 const { pool } = require('../config/database');
+const emailService = require('../services/emailService');
 const router = express.Router();
 
 // Submit lead form
@@ -39,6 +40,17 @@ router.post('/', async (req, res) => {
       INSERT INTO edu_leads (name, email, phone, selected_plan, source, ip_address)
       VALUES (?, ?, ?, ?, ?, ?)
     `, [name, email, phone, selected_plan, source, ip_address]);
+
+    // Send welcome email to lead (async, don't block response)
+    const leadData = { name, email, phone, selected_plan };
+    emailService.sendWelcomeEmail(leadData, result.insertId)
+      .then(() => console.log(`✅ Welcome email sent to ${email}`))
+      .catch(error => console.error(`❌ Failed to send welcome email to ${email}:`, error.message));
+    
+    // Send notification email to admin (async)  
+    emailService.sendAdminNotification(leadData, result.insertId)
+      .then(() => console.log(`📧 Admin notification sent for lead ${name}`))
+      .catch(error => console.error(`❌ Failed to send admin notification:`, error.message));
 
     res.status(201).json({
       success: true,
@@ -187,6 +199,80 @@ router.get('/stats', async (req, res) => {
     console.error('Error getting lead stats:', error);
     res.status(500).json({
       error: 'Failed to get lead stats',
+      message: error.message
+    });
+  }
+});
+
+// Test email service endpoint
+router.post('/test-email', async (req, res) => {
+  try {
+    const testLead = {
+      name: 'Test User',
+      email: 'test@example.com',
+      phone: '0123456789',
+      selected_plan: 'premium'
+    };
+
+    // Test email connection first
+    const isConnected = await emailService.testConnection();
+    if (!isConnected) {
+      return res.status(500).json({
+        error: 'Email service not configured',
+        message: 'Please check email credentials'
+      });
+    }
+
+    // Send test emails
+    await emailService.sendWelcomeEmail(testLead);
+    await emailService.sendAdminNotification(testLead);
+
+    res.json({
+      success: true,
+      message: 'Test emails sent successfully',
+      emails_sent: ['welcome', 'admin_notification']
+    });
+  } catch (error) {
+    console.error('Email test failed:', error);
+    res.status(500).json({
+      error: 'Email test failed',
+      message: error.message
+    });
+  }
+});
+
+// Test email service endpoint
+router.post('/test-email', async (req, res) => {
+  try {
+    const testLead = {
+      name: 'Test User',
+      email: 'test@example.com',
+      phone: '0123456789',
+      selected_plan: 'premium'
+    };
+
+    // Test email connection first
+    const isConnected = await emailService.testConnection();
+    if (!isConnected) {
+      return res.status(500).json({
+        error: 'Email service not configured',
+        message: 'Please check email credentials'
+      });
+    }
+
+    // Send test emails
+    await emailService.sendWelcomeEmail(testLead);
+    await emailService.sendAdminNotification(testLead);
+
+    res.json({
+      success: true,
+      message: 'Test emails sent successfully',
+      emails_sent: ['welcome', 'admin_notification']
+    });
+  } catch (error) {
+    console.error('Email test failed:', error);
+    res.status(500).json({
+      error: 'Email test failed',
       message: error.message
     });
   }

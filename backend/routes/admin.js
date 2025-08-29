@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { pool } = require('../config/database');
+const { getEmailStats } = require('../services/emailTracking');
 const router = express.Router();
 
 // Middleware to verify admin token
@@ -295,6 +296,24 @@ router.get('/export/leads', verifyToken, async (req, res) => {
     console.error('Export edu_leads error:', error);
     res.status(500).json({
       error: 'Failed to export edu_leads',
+      message: error.message
+    });
+  }
+});
+
+// Email marketing stats endpoint
+router.get('/email-stats', verifyToken, async (req, res) => {
+  try {
+    const emailStats = await getEmailStats();
+    
+    res.json({
+      success: true,
+      data: emailStats
+    });
+  } catch (error) {
+    console.error('Email stats error:', error);
+    res.status(500).json({
+      error: 'Failed to get email statistics',
       message: error.message
     });
   }
