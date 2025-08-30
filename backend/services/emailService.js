@@ -5,11 +5,11 @@ const { logEmail } = require('./emailTracking');
 class EmailService {
   constructor() {
     // Setup Gmail SMTP transporter
-    this.transporter = nodemailer.createTransporter({
+    this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER || 'admin@eduplatform.com',
-        pass: process.env.EMAIL_PASS || 'your-app-password' // Gmail App Password
+        user: process.env.EMAIL_USER || 'tri10ngon@gmail.com  ',
+        pass: process.env.EMAIL_PASS || 'tydc rclg nbjh nvxq'
       }
     });
   }
