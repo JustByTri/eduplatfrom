@@ -1,6 +1,3 @@
-// Disable SSL certificate verification (for development/testing only)
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 // EnglishMaster Pro Backend - Database should be "Eng"
 const express = require('express');
 const cors = require('cors');
@@ -27,43 +24,44 @@ app.use(helmet());
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000, 
+  max: 100
 });
 app.use(limiter);
 
-// CORS configuration - Most permissive for debugging
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', '*');
-  res.header('Access-Control-Allow-Headers', '*');
-  
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  next();
-});
+
+const allowedOrigins = [
+  "https://eduplatfrom.vercel.app", 
+  "http://localhost:3000"            
+];
 
 app.use(cors({
-  origin: 'https://eduplatfrom.vercel.app',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
-  methods: '*', 
-  allowedHeaders: '*',
-  optionsSuccessStatus: 200
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// Body parsing middleware
+
+app.options("*", cors());
+
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    version: '1.0.3' // Force deploy version
+    version: '1.0.3'
   });
 });
 
@@ -76,43 +74,6 @@ app.get('/test-cors', (req, res) => {
   });
 });
 
-// Options test for preflight
-app.options('/test-cors', (req, res) => {
-  res.status(200).end();
-});
-
-// Debug endpoint to check database and admin user
-app.get('/debug', async (req, res) => {
-  try {
-    const { pool } = require('./config/database');
-    
-    // Check database connection
-    const [tables] = await pool.execute('SHOW TABLES');
-    
-    // Check if admin user exists
-    let adminCheck = null;
-    try {
-      const [admins] = await pool.execute('SELECT id, username, email, is_active FROM edu_admin_users LIMIT 5');
-      adminCheck = admins;
-    } catch (error) {
-      adminCheck = { error: error.message };
-    }
-    
-    res.json({
-      database: process.env.DB_NAME,
-      tables: tables.map(t => Object.values(t)[0]),
-      admin_users: adminCheck,
-      env: {
-        NODE_ENV: process.env.NODE_ENV,
-        DB_HOST: process.env.DB_HOST?.substring(0, 20) + '...',
-        DB_NAME: process.env.DB_NAME
-      }
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 // API Routes
 app.use('/api/visitors', visitorsRoutes);
 app.use('/api/leads', leadsRoutes);
@@ -122,16 +83,16 @@ app.use('/api/analytics', analyticsRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     error: 'Endpoint not found',
-    path: req.originalUrl 
+    path: req.originalUrl
   });
 });
 
 // Global error handler
 app.use((error, req, res, next) => {
   console.error('Global error:', error);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
   });
@@ -140,15 +101,11 @@ app.use((error, req, res, next) => {
 // Initialize database and start server
 const startServer = async () => {
   try {
-    // Test database connection
     await testConnection();
-    
-    // Create tables and seed data
     await createTables();
     await seedAdminUser();
     await createEmailTable();
-    
-    // Start server
+
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📊 Health check: http://localhost:${PORT}/health`);
